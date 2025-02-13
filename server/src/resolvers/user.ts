@@ -11,7 +11,8 @@ import { COOKIE_NAME } from "../constants";
 export class UserResolver {
   @Mutation((_return) => UserMutationResponse)
   async register(
-    @Arg("registerInput") registerInput: RegisterInput
+    @Arg("registerInput") registerInput: RegisterInput,
+    @Ctx() { req }: Context
   ): Promise<UserMutationResponse> {
     const validateRegisterInputErrors = validateregisterInput(registerInput);
     if (validateRegisterInputErrors !== null)
@@ -51,6 +52,9 @@ export class UserResolver {
 
       await newUser.save();
 
+      //save session and send sessionId
+      req.session.userId = newUser.id;
+
       return {
         code: 200,
         success: true,
@@ -69,7 +73,7 @@ export class UserResolver {
   @Mutation((_return) => UserMutationResponse)
   async login(
     @Arg("loginInput") loginInput: LoginInput,
-    @Ctx() { req, res }: Context
+    @Ctx() { req }: Context
   ): Promise<UserMutationResponse> {
     try {
       const { usernameOrEmail, password } = loginInput;
@@ -108,22 +112,11 @@ export class UserResolver {
           ],
         };
       }
-      console.log("Log bug 1");
       //session: userId = existingUser.id
       //create session and return cookie
       req.session.userId = existingUser.id;
-      console.log("Session after setting userId:", req.session);
-      console.log("Response headers:", res.getHeaders());
 
       //set-cookie
-      res.cookie(COOKIE_NAME, req.sessionID, {
-        httpOnly: true,
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
-      });
-
-      // return user data
-      existingUser.updatedAt = new Date();
-      await existingUser.save();
 
       return {
         code: 200,
@@ -138,5 +131,22 @@ export class UserResolver {
         message: "Internal Server Error",
       };
     }
+  }
+
+  @Mutation((_return) => Boolean)
+  logout(@Ctx() { req, res }: Context): Promise<boolean> {
+    //clear cookies
+    return new Promise<boolean>((resolve, _reject) => {
+      res.clearCookie(COOKIE_NAME);
+
+      req.session.destroy((error) => {
+        if (error) {
+          console.error("SESSION destroy error: " + error);
+          resolve(false);
+        } else {
+          resolve(true);
+        }
+      });
+    });
   }
 }

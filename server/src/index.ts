@@ -14,7 +14,7 @@ import session from "express-session";
 import MongoStore from "connect-mongo";
 import { __prod__, COOKIE_NAME } from "./constants";
 import { Context } from "./types/Context";
-import cors from "cors";
+import { PostResolver } from "./resolvers/post";
 const main = async () => {
   await createConnection({
     type: "postgres",
@@ -63,7 +63,7 @@ const main = async () => {
   // Apollo Server setup
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [HelloResolver, UserResolver],
+      resolvers: [HelloResolver, UserResolver, PostResolver],
       validate: false,
     }),
     context: ({ req, res }): Context => ({ req, res }),
