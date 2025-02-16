@@ -10,7 +10,14 @@
     "@jridgewell/gen-mapping" "^0.3.5"
     "@jridgewell/trace-mapping" "^0.3.24"
 
-"@apollo/client@^3.13.1":
+"@apollo/client-react-streaming@0.11.9":
+  version "0.11.9"
+  resolved "https://registry.npmjs.org/@apollo/client-react-streaming/-/client-react-streaming-0.11.9.tgz"
+  integrity sha512-jK/P+3cV48My3qbpnwV7mFNlMD+AUUudXk9t3AIdogvpx/O3V9Hl8jay5fmHC1BFJDHpBWcxEWM1kHH3uFyZwA==
+  dependencies:
+    ts-invariant "^0.10.3"
+
+"@apollo/client@^3.10.4", "@apollo/client@^3.13.1":
   version "3.13.1"
   resolved "https://registry.npmjs.org/@apollo/client/-/client-3.13.1.tgz"
   integrity sha512-HaAt62h3jNUXpJ1v5HNgUiCzPP1c5zc2Q/FeTb2cTk/v09YlhoqKKHQFJI7St50VCJ5q8JVIc03I5bRcBrQxsg==
@@ -28,6 +35,13 @@
     ts-invariant "^0.10.3"
     tslib "^2.3.0"
     zen-observable-ts "^1.2.5"
+
+"@apollo/experimental-nextjs-app-support@^0.11.9":
+  version "0.11.9"
+  resolved "https://registry.npmjs.org/@apollo/experimental-nextjs-app-support/-/experimental-nextjs-app-support-0.11.9.tgz"
+  integrity sha512-RAGAuPxbNnUVLULa/AiAtGEClENmLm4bLWXVeLsmtkHTjhv+mQgHO4sdHAxo8HqtZowPQP73Mnw4K8CbQVm20Q==
+  dependencies:
+    "@apollo/client-react-streaming" "0.11.9"
 
 "@ardatan/relay-compiler@^12.0.1":
   version "12.0.2"
@@ -1958,6 +1972,11 @@ deepmerge@^2.1.1:
   resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-2.2.1.tgz"
   integrity sha512-R9hc1Xa/NOBi9WRVUWg19rl1UB7Tt4kuPd+thNJgFZoxXsTz7ncaPaeIm+40oSGuP33DfMb4sZt1QIGiJzC4EA==
 
+deepmerge@^4.3.1:
+  version "4.3.1"
+  resolved "https://registry.npmjs.org/deepmerge/-/deepmerge-4.3.1.tgz"
+  integrity sha512-3sUqbMEc77XqpdNO7FRyRog+eW3ph+GYCbj+rK+uYyRMuwsVy0rMiVtPn+QJlKFvWP/1PYpapqYn0Me2knFn+A==
+
 defaults@^1.0.3:
   version "1.0.4"
   resolved "https://registry.npmjs.org/defaults/-/defaults-1.0.4.tgz"
@@ -2303,6 +2322,11 @@ graphql@*, "graphql@^0.11.0 || ^0.12.0 || ^0.13.0 || ^14.0.0 || ^15.0.0 || ^16.0
   resolved "https://registry.npmjs.org/graphql/-/graphql-15.10.1.tgz"
   integrity sha512-BL/Xd/T9baO6NFzoMpiMD7YUZ62R6viR5tp/MULVEnbYJXZA//kRNW7J0j1w/wXArgL0sCxhDfK5dczSKn3+cg==
 
+"graphql@^16 || >=17.0.0-alpha.2":
+  version "16.10.0"
+  resolved "https://registry.npmjs.org/graphql/-/graphql-16.10.0.tgz"
+  integrity sha512-AjqGKbDGUFRKIRCP9tCKiIGHyriz2oHEbPIbEtcSLSs4YjReZOIPQQWek4+6hjw62H9QShXHyaGivGiYVLeYFQ==
+
 has-flag@^4.0.0:
   version "4.0.0"
   resolved "https://registry.npmjs.org/has-flag/-/has-flag-4.0.0.tgz"
@@ -2517,6 +2541,14 @@ is-windows@^1.0.1:
   resolved "https://registry.npmjs.org/is-windows/-/is-windows-1.0.2.tgz"
   integrity sha512-eXK1UInq2bPmjyX6e3VHIzMLobc4J94i4AWn+Hpq3OU5KkrRC96OAcR3PRJ/pGu6m8TRnBHP9dkXQVsT/COVIA==
 
+isomorphic-unfetch@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.npmjs.org/isomorphic-unfetch/-/isomorphic-unfetch-4.0.2.tgz"
+  integrity sha512-1Yd+CF/7al18/N2BDbsLBcp6RO3tucSW+jcLq24dqdX5MNbCNTw1z4BsGsp4zNmjr/Izm2cs/cEqZPp4kvWSCA==
+  dependencies:
+    node-fetch "^3.2.0"
+    unfetch "^5.0.0"
+
 isomorphic-ws@^5.0.0:
   version "5.0.0"
   resolved "https://registry.npmjs.org/isomorphic-ws/-/isomorphic-ws-5.0.0.tgz"
@@ -2726,7 +2758,7 @@ nanoid@^3.3.6:
   resolved "https://registry.npmjs.org/nanoid/-/nanoid-3.3.8.tgz"
   integrity sha512-WNLf5Sd8oZxOm+TzppcYk8gVOgP+l58xNy58D0nbUnOxOWRWvlcCV4kUF7ltmI6PsrLl/BgKEyS4mqsGChFN0w==
 
-next@14.0.3:
+"next@^13.4.1 || ^14.0.0 || ^15.0.0-rc.0", next@14.0.3:
   version "14.0.3"
   resolved "https://registry.npmjs.org/next/-/next-14.0.3.tgz"
   integrity sha512-AbYdRNfImBr3XGtvnwOxq8ekVCwbFTv/UJoLwmaX89nk9i051AEY4/HAWzU0YpaTDw8IofUpmuIlvzWF13jxIw==
@@ -2768,6 +2800,15 @@ node-fetch@^2.7.0:
   integrity sha512-c4FRfUm/dbcWZ7U+1Wq0AwCyFL+3nt2bEw05wfxSz+DWpWsitgmSgYmy2dQdWyKC1694ELPqMs/YzUSNozLt8A==
   dependencies:
     whatwg-url "^5.0.0"
+
+node-fetch@^3.2.0:
+  version "3.3.2"
+  resolved "https://registry.npmjs.org/node-fetch/-/node-fetch-3.3.2.tgz"
+  integrity sha512-dRB78srN/l6gqWulah9SrxeYnxeddIG30+GOqK/9OlLVyLg3HPnr6SqOWTWOXKRwC2eGYCkZ59NNuSgvSrpgOA==
+  dependencies:
+    data-uri-to-buffer "^4.0.0"
+    fetch-blob "^3.1.4"
+    formdata-polyfill "^4.0.10"
 
 node-fetch@^3.3.2:
   version "3.3.2"
@@ -3026,7 +3067,7 @@ react-clientside-effect@^1.2.7:
   dependencies:
     "@babel/runtime" "^7.12.13"
 
-"react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc", react-dom@^18.2.0, "react-dom@>=16.8 || ^17.0.0 || ^18.0.0", react-dom@>=18:
+"react-dom@^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc", "react-dom@^18 || >=19.0.0-rc", react-dom@^18.2.0, "react-dom@>=16.8 || ^17.0.0 || ^18.0.0", react-dom@>=18:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react-dom/-/react-dom-18.3.1.tgz"
   integrity sha512-5m4nQKp+rZRb09LNH59GM4BxTh9251/ylbKIbpe7TpGxfJ+9kv6BLkLBXIjjspbgbnIBNqlI23tRnTWT0snUIw==
@@ -3088,7 +3129,7 @@ react-style-singleton@^2.2.2, react-style-singleton@^2.2.3:
     get-nonce "^1.0.0"
     tslib "^2.0.0"
 
-react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc", react@^18.2.0, react@^18.3.1, "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@>=16.8 || ^17.0.0 || ^18.0.0", react@>=16.8.0, react@>=18:
+react@*, "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || ^19.0.0 || ^19.0.0-rc", "react@^16.8.0 || ^17.0.0 || ^18.0.0 || >=19.0.0-rc", "react@^18 || >=19.0.0-rc", react@^18.2.0, react@^18.3.1, "react@>= 16.8.0 || 17.x.x || ^18.0.0-0", "react@>=16.8 || ^17.0.0 || ^18.0.0", react@>=16.8.0, react@>=18:
   version "18.3.1"
   resolved "https://registry.npmjs.org/react/-/react-18.3.1.tgz"
   integrity sha512-wS+hAgJShR0KhEvPJArfuPVN1+Hz1t0Y6n5jLrGQbkb4urgPE/0Rve+1kMB1v/oWgHgm4WIcV+i7F2pTVj+2iQ==
@@ -3532,6 +3573,11 @@ undici-types@~6.20.0:
   version "6.20.0"
   resolved "https://registry.npmjs.org/undici-types/-/undici-types-6.20.0.tgz"
   integrity sha512-Ny6QZ2Nju20vw1SRHe3d9jVu6gJ+4e3+MMpqu7pqE5HT6WsTSlce++GQmK5UXS8mzV8DSYHrQH+Xrf2jVcuKNg==
+
+unfetch@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.npmjs.org/unfetch/-/unfetch-5.0.0.tgz"
+  integrity sha512-3xM2c89siXg0nHvlmYsQ2zkLASvVMBisZm5lF3gFDqfF2xonNStDJyMpvaOBe0a1Edxmqrf2E0HBdmy9QyZaeg==
 
 unixify@^1.0.0:
   version "1.0.0"
