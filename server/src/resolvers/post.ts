@@ -2,12 +2,21 @@ import { UpdatePostInput } from "../types/UpdatePostInput";
 import { Post } from "../entities/Post";
 import { CreatePostInput } from "../types/CreatePostInput";
 import { PostMutationResponse } from "../types/PostMutationResponse";
-import { Resolver, Mutation, Arg, Query, ID } from "type-graphql";
+import {
+  Resolver,
+  Mutation,
+  Arg,
+  Query,
+  ID,
+  UseMiddleware,
+} from "type-graphql";
+import { checkAuth } from "../middleware/checkAuth";
 
 @Resolver()
 export class PostResolver {
   //Create post
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(checkAuth)
   async createPost(
     @Arg("createPostInput") createPostInput: CreatePostInput
   ): Promise<PostMutationResponse> {
@@ -59,6 +68,7 @@ export class PostResolver {
 
   //Update post by id
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(checkAuth)
   async updatePost(
     @Arg("upadtePostInput") updatePostInput: UpdatePostInput
   ): Promise<PostMutationResponse> {
@@ -101,6 +111,7 @@ export class PostResolver {
 
   //delete a post with if
   @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(checkAuth)
   async deletePost(
     @Arg("id", (_type) => ID) postId: number
   ): Promise<PostMutationResponse> {

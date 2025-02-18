@@ -15,6 +15,8 @@ import MongoStore from "connect-mongo";
 import { __prod__, COOKIE_NAME } from "./constants";
 import { Context } from "./types/Context";
 import { PostResolver } from "./resolvers/post";
+import cors from "cors";
+
 const main = async () => {
   await createConnection({
     type: "postgres",
@@ -28,6 +30,13 @@ const main = async () => {
 
   const app = express();
 
+  app.use(
+    cors({
+      origin: ["http://localhost:3000"], // allow specific origin
+      credentials: true, // allow cookies
+    })
+  );
+
   //session cookies
   const mongoURI =
     process.env.DB_MONGODB_SESSION || "mongodb://localhost:27017/";
@@ -36,19 +45,12 @@ const main = async () => {
     useUnifiedTopology: true,
   });
 
-  // app.use(
-  //   cors({
-  //     origin: "http://localhost:4000", // FE của bạn
-  //     credentials: true, // Quan trọng để gửi cookie
-  //   })
-  // );
-
   app.use(
     session({
       name: COOKIE_NAME,
       store: MongoStore.create({ mongoUrl: mongoURI }),
       cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 7, // 7 days
+        maxAge: 1000 * 60 * 60,
         httpOnly: true, //JS from FE cannot read cookies
         secure: __prod__, // Cookie only sent over HTTPS
         sameSite: "lax", // Protection against CSRF attacks,

@@ -1,5 +1,6 @@
-import { Box, Button, Flex, Spinner, useToast } from "@chakra-ui/react";
+import { Box, Button, Flex, Spinner, useToast, Link } from "@chakra-ui/react";
 import { Formik, Form, FormikHelpers } from "formik";
+import NextLink from "next/link"; // Import Next.js Link
 import React from "react";
 import Wrapper from "./Wrapper";
 import InputField from "../components/InputField";
@@ -12,6 +13,7 @@ import {
 import { mapFieldError } from "../helpers/mapFieldErrors";
 import { useRouter } from "next/router";
 import { useCheckAuth } from "../utils/useCheckAuth";
+
 const Login = () => {
   const { data: authData, loading: authLoading } = useCheckAuth();
   const initialValues: LoginInput = {
@@ -43,7 +45,7 @@ const Login = () => {
         }
       },
     });
-    console.log(response);
+
     if (response && response.data?.login.errors) {
       setErrors(mapFieldError(response.data.login.errors));
     } else if (response && response.data && response.data.login) {
@@ -62,19 +64,14 @@ const Login = () => {
   if (authLoading || (!authLoading && authData?.me))
     return (
       <Flex align="center" justifyContent="center" minH="100vh">
-        <Spinner></Spinner>;
+        <Spinner />
       </Flex>
     );
+
   return (
     <Wrapper>
       {error && (
-        <p style={{ color: "red" }}>Failed to register: {error.message}</p>
-      )}
-      {data && data.login.success && (
-        <p>Register successfully {JSON.stringify(data)}</p>
-      )}
-      {data && !data.login.success && (
-        <p>{JSON.stringify(data.login.errors)}</p>
+        <p style={{ color: "red" }}>Failed to login: {error.message}</p>
       )}
       <Formik initialValues={initialValues} onSubmit={handleLoginSubmit}>
         {({ isSubmitting }) => (
@@ -95,14 +92,25 @@ const Login = () => {
                 type="password"
               />
             </Box>
+
             <Button
               type="submit"
               colorScheme="teal"
               mt={4}
               isLoading={isSubmitting}
+              width="full"
             >
               Login
             </Button>
+
+            {/* 🔹 Forgot Password Link */}
+            <Flex mt={2} justifyContent="flex-end">
+              <NextLink href="/forgot-password" passHref>
+                <Link color="teal.500" fontSize="sm">
+                  Forgot password?
+                </Link>
+              </NextLink>
+            </Flex>
           </Form>
         )}
       </Formik>
