@@ -9,21 +9,43 @@ import {
   Query,
   ID,
   UseMiddleware,
+  FieldResolver,
+  Root,
+  Int,
+  Ctx,
 } from "type-graphql";
 import { checkAuth } from "../middleware/checkAuth";
+import { User } from "../entities/User";
+import { PaginatedPosts } from "../types/PaginatedPosts";
+import { LessThan } from "typeorm";
+import { Context } from "../types/Context";
 
-@Resolver()
+@Resolver((_of) => Post)
 export class PostResolver {
+  @FieldResolver((_return) => String)
+  textSnippet(@Root() parentPost: Post) {
+    return parentPost.text.length > 100
+      ? parentPost.text.slice(0, 100) + "..."
+      : parentPost.text;
+  }
+
+  @FieldResolver((_return) => User)
+  async user(@Root() parentPost: Post) {
+    return await User.findOne({ where: { id: parentPost.userId } });
+  }
+
   //Create post
   @Mutation((_return) => PostMutationResponse)
   @UseMiddleware(checkAuth)
   async createPost(
-    @Arg("createPostInput") createPostInput: CreatePostInput
+    @Arg("createPostInput") createPostInput: CreatePostInput,
+    @Ctx() { req }: Context
   ): Promise<PostMutationResponse> {
     try {
       const newPost = Post.create({
         title: createPostInput.title,
         text: createPostInput.text,
+        userId: req.session.userId,
       });
       newPost.save();
       return {
@@ -43,10 +65,35 @@ export class PostResolver {
   }
 
   //Get all posts
-  @Query((_return) => [Post], { nullable: true })
-  async posts(): Promise<Post[] | null> {
+  @Query((_return) => PaginatedPosts, { nullable: true })
+  async posts(
+    @Arg("cursor", (_type) => String, { nullable: true })
+    cursor?: string | null,
+    @Arg("limit", (_type) => Int, { defaultValue: 3 }) limit: number = 3
+  ): Promise<PaginatedPosts | null> {
     try {
-      return await Post.find();
+      const totalPostCount = await Post.count();
+      const realLimit = Math.min(10, limit);
+
+      const findOptions: { [key: string]: any } = {
+        order: { createdAt: "DESC" },
+        take: realLimit + 1,
+      };
+
+      if (cursor) {
+        findOptions.where = { createdAt: LessThan(cursor) };
+      }
+
+      const posts = await Post.find(findOptions);
+      const hasMore = posts.length > realLimit;
+      if (hasMore) posts.pop();
+
+      return {
+        totalCount: totalPostCount,
+        cursor: posts[posts.length - 1].createdAt,
+        hasMore: hasMore,
+        PaginatedPosts: posts,
+      };
     } catch (error) {
       console.error(error);
       return null;
@@ -70,7 +117,8 @@ export class PostResolver {
   @Mutation((_return) => PostMutationResponse)
   @UseMiddleware(checkAuth)
   async updatePost(
-    @Arg("upadtePostInput") updatePostInput: UpdatePostInput
+    @Arg("updatePostInput") updatePostInput: UpdatePostInput,
+    @Ctx() { req }: Context
   ): Promise<PostMutationResponse> {
     try {
       const { id, title, text } = updatePostInput;
@@ -84,6 +132,19 @@ export class PostResolver {
             {
               field: "id",
               message: `Post not found`,
+            },
+          ],
+        };
+      }
+      if (existingPost.userId !== req.session.userId) {
+        return {
+          code: 403,
+          success: false,
+          message: "Unauthorized to update this post",
+          errors: [
+            {
+              field: "id",
+              message: "Unauthorized to update this post",
             },
           ],
         };
@@ -113,10 +174,11 @@ export class PostResolver {
   @Mutation((_return) => PostMutationResponse)
   @UseMiddleware(checkAuth)
   async deletePost(
-    @Arg("id", (_type) => ID) postId: number
+    @Arg("id", (_type) => ID) postId: number,
+    @Ctx() { req }: Context
   ): Promise<PostMutationResponse> {
     try {
-      const existingPost = await Post.findOne(postId);
+      const existingPost = await Post.findOne({ where: { id: postId } });
       if (!existingPost) {
         return {
           code: 404,
@@ -126,6 +188,19 @@ export class PostResolver {
             {
               field: "id",
               message: `Post not found`,
+            },
+          ],
+        };
+      }
+      if (existingPost.userId !== req.session.userId) {
+        return {
+          code: 403,
+          success: false,
+          message: "Unauthorized to delete this post",
+          errors: [
+            {
+              field: "id",
+              message: "Unauthorized to delete this post",
             },
           ],
         };

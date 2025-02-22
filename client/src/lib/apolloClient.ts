@@ -66,22 +66,15 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
           fields: {
             posts: {
               keyArgs: false,
-              merge(existing, incoming) {
-                let paginatedPosts: Post[] = [];
-
-                if (existing && existing.paginatedPosts) {
-                  paginatedPosts = paginatedPosts.concat(
-                    existing.paginatedPosts
-                  );
-                }
-
-                if (incoming && incoming.paginatedPosts) {
-                  paginatedPosts = paginatedPosts.concat(
-                    incoming.paginatedPosts
-                  );
-                }
-
-                return { ...incoming, paginatedPosts };
+              merge(existing = {}, incoming) {
+                return {
+                  ...existing, // Giữ lại toàn bộ dữ liệu cũ
+                  ...incoming, // Cập nhật totalCount, cursor, hasMore
+                  PaginatedPosts: [
+                    ...(existing.PaginatedPosts || []), // Dữ liệu cũ
+                    ...incoming.PaginatedPosts, // Thêm dữ liệu mới vào cuối
+                  ],
+                };
               },
             },
           },

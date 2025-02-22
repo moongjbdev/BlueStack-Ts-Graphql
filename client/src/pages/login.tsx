@@ -69,7 +69,7 @@ const Login = () => {
     );
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       {error && (
         <p style={{ color: "red" }}>Failed to login: {error.message}</p>
       )}

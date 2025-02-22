@@ -20,6 +20,7 @@ import {
 import { mapFieldError } from "../helpers/mapFieldErrors";
 import Link from "next/link";
 import { useCheckAuth } from "../utils/useCheckAuth";
+import Wrapper from "./Wrapper";
 
 const ChangePassword = () => {
   const router = useRouter();
@@ -109,45 +110,47 @@ const ChangePassword = () => {
       </Flex>
     );
   return (
-    <Flex align="center" justify="center" minH="100vh">
-      <Box width="400px" p={4} boxShadow="md" borderRadius="md">
-        <Formik
-          initialValues={initialValues}
-          onSubmit={handleChangePasswordSubmit}
-        >
-          {({ isSubmitting }) => (
-            <Form>
-              <InputField
-                name="newPassword"
-                placeholder="Enter new password"
-                label="New Password"
-                type="password"
-              />
-              <Button
-                type="submit"
-                colorScheme="teal"
-                mt={4}
-                isLoading={isSubmitting || loading}
-                width="full"
-              >
-                Change Password
-              </Button>
+    <Wrapper size="small">
+      <Flex align="center" justify="center" minH="100vh">
+        <Box width="400px" p={4} boxShadow="md" borderRadius="md">
+          <Formik
+            initialValues={initialValues}
+            onSubmit={handleChangePasswordSubmit}
+          >
+            {({ isSubmitting }) => (
+              <Form>
+                <InputField
+                  name="newPassword"
+                  placeholder="Enter new password"
+                  label="New Password"
+                  type="password"
+                />
+                <Button
+                  type="submit"
+                  colorScheme="teal"
+                  mt={4}
+                  isLoading={isSubmitting || loading}
+                  width="full"
+                >
+                  Change Password
+                </Button>
 
-              {/* Nếu có lỗi token, hiển thị link quay lại trang đổi mật khẩu */}
-              {tokenError && (
-                <Box mt={4} textAlign="center">
-                  <Link href="/forgot-password">
-                    <Button variant="link" colorScheme="teal">
-                      Go back to change password page
-                    </Button>
-                  </Link>
-                </Box>
-              )}
-            </Form>
-          )}
-        </Formik>
-      </Box>
-    </Flex>
+                {/* Nếu có lỗi token, hiển thị link quay lại trang đổi mật khẩu */}
+                {tokenError && (
+                  <Box mt={4} textAlign="center">
+                    <Link href="/forgot-password">
+                      <Button variant="link" colorScheme="teal">
+                        Go back to change password page
+                      </Button>
+                    </Link>
+                  </Box>
+                )}
+              </Form>
+            )}
+          </Formik>
+        </Box>
+      </Flex>
+    </Wrapper>
   );
 };
 

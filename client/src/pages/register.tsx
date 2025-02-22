@@ -71,7 +71,7 @@ const Register = () => {
     );
 
   return (
-    <Wrapper>
+    <Wrapper size="small">
       <Formik initialValues={initialValues} onSubmit={handleRegisterSubmit}>
         {({ isSubmitting }) => (
           <Form>

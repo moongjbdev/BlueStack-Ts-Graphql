@@ -5,8 +5,10 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToMany,
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
+import { Post } from "./Post";
 @ObjectType() // ObjectType dinh nghia cho GraphQl
 @Entity() //db table
 export class User extends BaseEntity {
@@ -25,6 +27,10 @@ export class User extends BaseEntity {
   // Không có @Field() -> trường này sẽ không được expose trong GraphQL
   @Column()
   password!: string;
+
+  @Field(() => [Post])
+  @OneToMany(() => Post, (post) => post.user, { lazy: true })
+  posts: Post[];
 
   @Field((_type) => Date)
   @CreateDateColumn()

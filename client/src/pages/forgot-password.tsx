@@ -41,7 +41,7 @@ const ForgotPassword = () => {
       </Flex>
     );
   return (
-    <Wrapper>
+    <Wrapper size="small">
       <Formik
         initialValues={initialValues}
         onSubmit={handleForgotPasswordSubmit}
