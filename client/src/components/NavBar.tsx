@@ -39,15 +39,25 @@ const NavBar = () => {
           </Heading>
         </Link>
 
-        {/* Nếu đã login, hiển thị Logout */}
+        {/* Nếu đã login, hiển thị Create Post & Logout */}
         {data?.me ? (
-          <Button
-            colorScheme="teal"
-            onClick={handleLogoutUser}
-            isLoading={useLogoutMutaionLoading}
-          >
-            Logout
-          </Button>
+          <Flex align="center">
+            {/* Nút Create Post */}
+            <Link href="/create-post" passHref>
+              <Button colorScheme="blue" mr={4}>
+                Create Post
+              </Button>
+            </Link>
+
+            {/* Nút Logout */}
+            <Button
+              colorScheme="teal"
+              onClick={handleLogoutUser}
+              isLoading={useLogoutMutaionLoading}
+            >
+              Logout
+            </Button>
+          </Flex>
         ) : (
           /* Nếu chưa login, hiển thị Login & Register */
           <Flex>

@@ -5,17 +5,23 @@ import { useEffect } from "react";
 export const useCheckAuth = () => {
   const router = useRouter();
   const { data, loading } = useMeQuery();
+
   useEffect(() => {
+    if (loading) return;
     if (
-      !loading &&
       data?.me &&
-      (router.route === "/login" ||
-        router.route === "/register" ||
-        router.route === "/forgot-password" ||
-        router.route === "/change-password")
+      ["/login", "/register", "/forgot-password", "/change-password"].includes(
+        router.route
+      )
     ) {
       router.replace("/");
+    } else if (
+      !data?.me &&
+      ["/create-post", "/profile"].includes(router.route)
+    ) {
+      router.replace("/login");
     }
   }, [data, loading, router]);
+
   return { data, loading };
 };

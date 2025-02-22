@@ -41,7 +41,7 @@ const Index = () => {
         </Flex>
       ) : (
         <Stack spacing={8}>
-          {data?.posts?.PaginatedPosts.map((post) => (
+          {data?.posts?.paginatedPosts.map((post) => (
             <Flex key={post.id} p={5} shadow="md" borderWidth="1px">
               <Box flex={1}>
                 {/* Chỉ bọc Link cho phần tiêu đề & nội dung */}

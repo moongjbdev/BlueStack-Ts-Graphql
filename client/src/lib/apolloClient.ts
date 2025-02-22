@@ -70,9 +70,9 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
                 return {
                   ...existing, // Giữ lại toàn bộ dữ liệu cũ
                   ...incoming, // Cập nhật totalCount, cursor, hasMore
-                  PaginatedPosts: [
-                    ...(existing.PaginatedPosts || []), // Dữ liệu cũ
-                    ...incoming.PaginatedPosts, // Thêm dữ liệu mới vào cuối
+                  paginatedPosts: [
+                    ...(existing.paginatedPosts || []), // Dữ liệu cũ
+                    ...incoming.paginatedPosts, // Thêm dữ liệu mới vào cuối
                   ],
                 };
               },

@@ -3,16 +3,8 @@ query Posts($limit: Int!, $cursor: String) {
     totalCount
     cursor
     hasMore
-    PaginatedPosts {
-      id
-      title
-      text
-      createdAt
-      updatedAt
-      textSnippet
-      user {
-        username
-      }
+    paginatedPosts {
+      ...postWithUserInfo
     }
   }
 }
