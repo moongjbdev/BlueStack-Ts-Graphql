@@ -66,13 +66,12 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
           fields: {
             posts: {
               keyArgs: false,
-              merge(existing = {}, incoming) {
+              merge(existing = { paginatedPosts: [] }, incoming) {
                 return {
-                  ...existing, // Giữ lại toàn bộ dữ liệu cũ
-                  ...incoming, // Cập nhật totalCount, cursor, hasMore
+                  ...incoming,
                   paginatedPosts: [
-                    ...(existing.paginatedPosts || []), // Dữ liệu cũ
-                    ...incoming.paginatedPosts, // Thêm dữ liệu mới vào cuối
+                    ...existing.paginatedPosts,
+                    ...incoming.paginatedPosts,
                   ],
                 };
               },

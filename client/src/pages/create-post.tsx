@@ -32,7 +32,7 @@ const CreatePost = () => {
                   const newPostAfterCreation = {
                     ...existing,
                     totalCount: existing.totalCount + 1,
-                    PaginatedPosts: [
+                    paginatedPosts: [
                       { __ref: newPostRef },
                       ...existing.paginatedPosts, // [{__ref: "Post:1", {__ref: "Post:2"}]
                     ],

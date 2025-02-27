@@ -2,10 +2,12 @@ fragment postWithUserInfo on Post {
   id
   title
   text
+  userId
   createdAt
   updatedAt
   textSnippet
   user {
+    id
     username
   }
 }

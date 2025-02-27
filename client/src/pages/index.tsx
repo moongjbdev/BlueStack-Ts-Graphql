@@ -13,48 +13,79 @@ import Link from "next/link";
 import Layout from "../components/Layout";
 import PostEditDeleteButton from "../components/PostEditDeleteButton";
 import { NetworkStatus } from "@apollo/client";
-const litmit = 3;
+import { GetServerSideProps, GetStaticProps } from "next";
+
+const limit = 3;
+
 const Index = () => {
   const { data, loading, error, fetchMore, networkStatus } = usePostsQuery({
-    variables: {
-      limit: litmit,
-    },
-
-    // component nao co render boi post query, se rerender khi networkStatus thay doi, tuc la fetchMore
+    variables: { limit },
     notifyOnNetworkStatusChange: true,
   });
 
   const loadingMorePage = networkStatus === NetworkStatus.fetchMore;
-  const loadMorePost = () =>
-    fetchMore({
+
+  const loadMorePost = () => {
+    const cursor = data?.posts?.cursor;
+    console.log("Cursor sent to fetchMore:", typeof cursor, cursor);
+
+    if (!cursor) return;
+
+    return fetchMore({
       variables: {
-        limit: litmit,
-        cursor: data?.posts?.cursor,
+        limit,
+        cursor,
       },
+      updateQuery: (prevResult, { fetchMoreResult }) => {
+        if (!fetchMoreResult?.posts) return prevResult;
+
+        return {
+          ...prevResult,
+          posts: {
+            ...fetchMoreResult.posts,
+            paginatedPosts: [
+              ...(prevResult.posts?.paginatedPosts || []), // Kiểm tra trước khi truy cập
+              ...fetchMoreResult.posts.paginatedPosts,
+            ],
+          },
+        };
+      },
+    }).catch((err) => {
+      console.error("Error fetching more posts:", err);
     });
+  };
 
   return (
     <Layout>
-      {loading && !loadMorePost ? (
+      {loading && !loadingMorePage ? (
         <Flex align="center" justifyContent="center" minH="100vh">
           <Spinner />
         </Flex>
+      ) : error ? (
+        <Text>Đã xảy ra lỗi khi tải dữ liệu.</Text>
       ) : (
         <Stack spacing={8}>
-          {data?.posts?.paginatedPosts.map((post) => (
-            <Flex key={post.id} p={5} shadow="md" borderWidth="1px">
+          {data?.posts?.paginatedPosts.map((post, index) => (
+            <Flex
+              key={`${post.id}-${index}`}
+              p={5}
+              shadow="md"
+              borderWidth="1px"
+            >
               <Box flex={1}>
-                {/* Chỉ bọc Link cho phần tiêu đề & nội dung */}
                 <Link href={`/post/${post.id}`}>
                   <Heading>{post.title}</Heading>
-                  <Text>Posted by: {post.user.username}</Text>
+                  <Text>Posted by: {post.user?.username ?? "Unknown"}</Text>
                   <Text mt={4}>{post.textSnippet}</Text>
                 </Link>
-
-                {/* Nút Edit/Delete nằm ngoài Link */}
-                <Flex align="center">
+                <Flex align="center" mt={2}>
                   <Box ml="auto">
-                    <PostEditDeleteButton />
+                    {post.user?.id.toString() === post.userId.toString() && (
+                      <PostEditDeleteButton
+                        postId={post.id}
+                        authorId={post.userId.toString()}
+                      />
+                    )}
                   </Box>
                 </Flex>
               </Box>
@@ -65,7 +96,12 @@ const Index = () => {
       {data?.posts?.hasMore && (
         <Flex>
           <Box m="auto" my={8}>
-            <Button onClick={loadMorePost} isLoading={loadingMorePage}>
+            <Button
+              onClick={() => {
+                loadMorePost();
+              }}
+              isLoading={loadingMorePage}
+            >
               {loadingMorePage ? "Loading" : "More..."}
             </Button>
           </Box>
@@ -75,18 +111,13 @@ const Index = () => {
   );
 };
 
-//query de dua vao cache cua apollo
-export const getStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
   const apolloClient = initializeApollo();
   await apolloClient.query({
     query: PostsDocument,
-    variables: {
-      limit: litmit,
-    },
+    variables: { limit },
   });
-  return addApolloState(apolloClient, {
-    props: {},
-  });
+  return addApolloState(apolloClient, { props: {} });
 };
 
 export default Index;

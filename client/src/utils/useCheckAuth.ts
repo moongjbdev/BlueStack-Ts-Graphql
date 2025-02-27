@@ -17,7 +17,7 @@ export const useCheckAuth = () => {
       router.replace("/");
     } else if (
       !data?.me &&
-      ["/create-post", "/profile"].includes(router.route)
+      ["/create-post", "/profile", "/post/edit"].includes(router.route)
     ) {
       router.replace("/login");
     }
