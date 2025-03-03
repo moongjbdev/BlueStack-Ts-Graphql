@@ -17,6 +17,7 @@ import { Context } from "./types/Context";
 import { PostResolver } from "./resolvers/post";
 import cors from "cors";
 
+process.env.TZ = "UTC"; //set timezone to UTC
 const main = async () => {
   await createConnection({
     type: "postgres",

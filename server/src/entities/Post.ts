@@ -34,10 +34,10 @@ export class Post extends BaseEntity {
   text!: string;
 
   @Field()
-  @CreateDateColumn({ type: "timestamptz" })
+  @CreateDateColumn()
   createdAt: Date;
 
   @Field()
-  @UpdateDateColumn({ type: "timestamptz" })
+  @UpdateDateColumn()
   updatedAt: Date;
 }

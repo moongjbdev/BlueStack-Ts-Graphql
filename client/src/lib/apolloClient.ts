@@ -1,3 +1,4 @@
+import { PaginatedPosts } from "./../generated/graphql";
 import { useMemo } from "react";
 import {
   ApolloClient,
@@ -66,14 +67,23 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
           fields: {
             posts: {
               keyArgs: false,
-              merge(existing = { paginatedPosts: [] }, incoming) {
-                return {
-                  ...incoming,
-                  paginatedPosts: [
-                    ...existing.paginatedPosts,
-                    ...incoming.paginatedPosts,
-                  ],
-                };
+              merge(existing, incoming) {
+                let paginatedPosts: Post[] = [];
+
+                if (existing && existing.paginatedPosts) {
+                  paginatedPosts = paginatedPosts.concat(
+                    existing.paginatedPosts
+                  );
+                }
+
+                if (incoming && incoming.paginatedPosts) {
+                  paginatedPosts = paginatedPosts.concat(
+                    incoming.paginatedPosts
+                  );
+                }
+
+                console.log(incoming);
+                return { ...incoming, paginatedPosts };
               },
             },
           },

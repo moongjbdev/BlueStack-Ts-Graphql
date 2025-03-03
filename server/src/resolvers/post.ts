@@ -46,8 +46,10 @@ export class PostResolver {
         title: createPostInput.title,
         text: createPostInput.text,
         userId: req.session.userId,
+        // createdAt: new Date().toISOString(), // Lưu UTC
       });
-      newPost.save();
+
+      await newPost.save();
       return {
         code: 200,
         success: true,
@@ -81,18 +83,22 @@ export class PostResolver {
       };
 
       if (cursor) {
-        findOptions.where = { createdAt: LessThan(cursor) };
+        const cursorDate = new Date(cursor);
+        findOptions.where = { createdAt: LessThan(cursorDate) };
+        console.log(cursor);
       }
 
       const posts = await Post.find(findOptions);
       const hasMore = posts.length > realLimit;
       if (hasMore) posts.pop();
+      const newCursor = posts[posts.length - 1].createdAt.toISOString();
 
       return {
         totalCount: totalPostCount,
-        cursor: posts[posts.length - 1].createdAt,
+        // cursor: posts[posts.length - 1].createdAt,
+        cursor: newCursor,
         hasMore: hasMore,
-        PaginatedPosts: posts,
+        paginatedPosts: posts,
       };
     } catch (error) {
       console.error(error);
