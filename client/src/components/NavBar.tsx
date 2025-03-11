@@ -7,7 +7,7 @@ import {
   useLogoutMutation,
   useMeQuery,
 } from "../generated/graphql";
-
+import { gql, Reference } from "@apollo/client";
 const NavBar = () => {
   const { data, loading: useMeQueryLoading } = useMeQuery();
   const [logoutUser, { loading: useLogoutMutaionLoading }] =
@@ -24,6 +24,28 @@ const NavBar = () => {
             },
           });
         }
+        cache.modify({
+          fields: {
+            posts(existingPosts) {
+              existingPosts.paginatedPosts.forEach((post: Reference) => {
+                cache.writeFragment({
+                  id: post.__ref,
+                  fragment: gql`
+                    fragment VoteType on Post {
+                      voteType
+                      points
+                    }
+                  `,
+                  data: {
+                    voteType: 0,
+                    points: 0,
+                  },
+                });
+              });
+              return existingPosts;
+            },
+          },
+        });
       },
     });
   };

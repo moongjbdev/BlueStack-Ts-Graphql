@@ -4,6 +4,7 @@ import express from "express";
 import { createConnection } from "typeorm";
 import { User } from "./entities/User";
 import { Post } from "./entities/Post";
+import { Upvote } from "./entities/Upvote";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
 import { ApolloServerPluginLandingPageGraphQLPlayground } from "apollo-server-core";
@@ -16,17 +17,18 @@ import { __prod__, COOKIE_NAME } from "./constants";
 import { Context } from "./types/Context";
 import { PostResolver } from "./resolvers/post";
 import cors from "cors";
+import { buildDataLoaders } from "./utils/dataLoader";
 
 process.env.TZ = "UTC"; //set timezone to UTC
 const main = async () => {
-  await createConnection({
+  const connection = await createConnection({
     type: "postgres",
     database: "bluedis",
     username: process.env.DB_USERNAME_DEV,
     password: process.env.DB_PASSWORD_DEV,
     logging: true,
     synchronize: true,
-    entities: [User, Post],
+    entities: [User, Post, Upvote],
   });
 
   const app = express();
@@ -69,7 +71,12 @@ const main = async () => {
       resolvers: [HelloResolver, UserResolver, PostResolver],
       validate: false,
     }),
-    context: ({ req, res }): Context => ({ req, res }),
+    context: ({ req, res }): Context => ({
+      req,
+      res,
+      connection,
+      dataLoaders: buildDataLoaders(),
+    }),
     plugins: [ApolloServerPluginLandingPageGraphQLPlayground()],
   });
 

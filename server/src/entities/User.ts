@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { ObjectType, Field, ID } from "type-graphql";
 import { Post } from "./Post";
+import { Upvote } from "./Upvote";
 @ObjectType() // ObjectType dinh nghia cho GraphQl
 @Entity() //db table
 export class User extends BaseEntity {
@@ -31,6 +32,9 @@ export class User extends BaseEntity {
   @Field(() => [Post])
   @OneToMany(() => Post, (post) => post.user, { lazy: true })
   posts: Post[];
+
+  @OneToMany((_to) => Upvote, (upvote) => upvote.user)
+  upvotes: Upvote[];
 
   @Field((_type) => Date)
   @CreateDateColumn()

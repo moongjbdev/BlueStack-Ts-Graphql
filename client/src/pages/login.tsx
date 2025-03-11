@@ -13,6 +13,8 @@ import {
 import { mapFieldError } from "../helpers/mapFieldErrors";
 import { useRouter } from "next/router";
 import { useCheckAuth } from "../utils/useCheckAuth";
+import { useApolloClient } from "@apollo/client";
+import { initializeApollo } from "../lib/apolloClient";
 
 const Login = () => {
   const { data: authData, loading: authLoading } = useCheckAuth();
@@ -57,6 +59,9 @@ const Login = () => {
         isClosable: true,
         position: "top",
       });
+      //reset cache data
+      const apolloClient = initializeApollo();
+      apolloClient.resetStore();
       router.push("/");
     }
   };

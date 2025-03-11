@@ -13,12 +13,20 @@ import {
   Root,
   Int,
   Ctx,
+  registerEnumType,
 } from "type-graphql";
 import { checkAuth } from "../middleware/checkAuth";
 import { User } from "../entities/User";
 import { PaginatedPosts } from "../types/PaginatedPosts";
 import { LessThan } from "typeorm";
 import { Context } from "../types/Context";
+import { VoteType } from "../types/voteType";
+import { UserInputError } from "apollo-server-core";
+import { Upvote } from "../entities/Upvote";
+
+registerEnumType(VoteType, {
+  name: "VoteType",
+});
 
 @Resolver((_of) => Post)
 export class PostResolver {
@@ -30,8 +38,35 @@ export class PostResolver {
   }
 
   @FieldResolver((_return) => User)
-  async user(@Root() parentPost: Post) {
-    return await User.findOne({ where: { id: parentPost.userId } });
+  async user(
+    @Root() parentPost: Post,
+    @Ctx() { dataLoaders: { userLoader } }: Context
+  ) {
+    // return await User.findOne({ where: { id: parentPost.userId } });
+    //dung dataLoader de load 1 lan het cac user cua posts
+    return await userLoader.load(parentPost.userId);
+  }
+
+  @FieldResolver((_return) => Int)
+  async voteType(
+    @Root() post: Post,
+    @Ctx() { req, dataLoaders: { voteTypeLoader } }: Context
+  ) {
+    if (!req.session.userId) {
+      return 0;
+    }
+    // const existingVote = await Upvote.findOne({
+    //   where: { postId: post.id, userId: req.session.userId },
+    // });
+
+    const existingVote = await voteTypeLoader.load({
+      postId: post.id,
+      userId: req.session.userId,
+    });
+    if (existingVote) {
+      return existingVote.value;
+    }
+    return 0;
   }
 
   //Create post
@@ -41,6 +76,7 @@ export class PostResolver {
     @Arg("createPostInput") createPostInput: CreatePostInput,
     @Ctx() { req }: Context
   ): Promise<PostMutationResponse> {
+    console.log("check session", req.session);
     try {
       const newPost = Post.create({
         title: createPostInput.title,
@@ -225,5 +261,71 @@ export class PostResolver {
         message: "Internal Server Error",
       };
     }
+  }
+
+  @Mutation((_return) => PostMutationResponse)
+  @UseMiddleware(checkAuth)
+  async vote(
+    @Arg("postId", (_type) => Int) postId: number,
+    @Arg("inputVoteValue", (_type) => VoteType) inputVoteValue: VoteType,
+    @Ctx() { req, connection }: Context
+  ): Promise<PostMutationResponse> {
+    return await connection.transaction(async (transactionEntityManager) => {
+      //check post exits
+      let post = await transactionEntityManager.findOne(Post, postId);
+      if (!post) {
+        throw new UserInputError("Post not found");
+      }
+      //check user has voted before
+      const existingVote = await transactionEntityManager.findOne(Upvote, {
+        where: { userId: req.session.userId, postId },
+      });
+      if (existingVote) {
+        // Nếu người dùng đã vote và giá trị vote mới giống với giá trị vote hiện tại
+        if (existingVote.value === inputVoteValue) {
+          // Hủy bỏ vote (xóa vote hiện tại)
+          await transactionEntityManager.delete(Upvote, {
+            userId: req.session.userId,
+            postId,
+          });
+
+          // Cập nhật điểm của bài viết (trừ đi giá trị vote hiện tại)
+          post.points -= existingVote.value;
+          post = await transactionEntityManager.save(post);
+        } else {
+          // Nếu người dùng thay đổi giá trị vote (ví dụ: từ 1 sang -1 hoặc ngược lại)
+          const pointChange = inputVoteValue - existingVote.value;
+
+          // Cập nhật giá trị vote
+          await transactionEntityManager.save(Upvote, {
+            ...existingVote,
+            value: inputVoteValue,
+          });
+
+          // Cập nhật điểm của bài viết
+          post.points += pointChange;
+          post = await transactionEntityManager.save(post);
+        }
+      } else {
+        // Nếu người dùng chưa vote
+        await transactionEntityManager.insert(Upvote, {
+          userId: req.session.userId,
+          postId,
+          value: inputVoteValue,
+        });
+
+        // Cập nhật điểm của bài viết
+        post.points += inputVoteValue;
+        post = await transactionEntityManager.save(post);
+      }
+
+      // Trả về kết quả
+      return {
+        code: 200,
+        success: true,
+        message: "Vote updated successfully",
+        post,
+      };
+    });
   }
 }

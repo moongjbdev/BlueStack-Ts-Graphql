@@ -82,7 +82,6 @@ function createApolloClient(headers: IncomingHttpHeaders | null = null) {
                   );
                 }
 
-                console.log(incoming);
                 return { ...incoming, paginatedPosts };
               },
             },
@@ -103,6 +102,10 @@ export function initializeApollo(
   } = { headers: null, initialState: null }
 ) {
   const _apolloClient = apolloClient ?? createApolloClient(headers);
+  console.log(
+    "check headers trong apollo ================================== ",
+    headers?.cookie
+  );
 
   // If your page has Next.js data fetching methods that use Apollo Client, the initial state
   // gets hydrated here
